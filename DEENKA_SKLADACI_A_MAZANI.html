@@ -1,0 +1,3360 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+  <meta name="theme-color" content="#15182a">
+
+  <title>Achievementy dospělosti</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --background: #0d1020;
+      --panel: #181c31;
+      --panel-light: #242943;
+      --panel-dark: #111528;
+      --text: #f7f8ff;
+      --muted: #aab1cc;
+      --accent: #8d7bff;
+      --accent-light: #b8adff;
+      --green: #45d7a0;
+      --red: #ff7184;
+      --yellow: #ffc65c;
+      --border: rgba(255, 255, 255, 0.08);
+      --shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+      --radius: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+      background:
+        radial-gradient(circle at top right, #302b63 0, transparent 35%),
+        linear-gradient(160deg, #0b0e1b, #15192d 55%, #0e1120);
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .app {
+      width: min(100%, 1050px);
+      margin: 0 auto;
+      padding:
+        max(18px, env(safe-area-inset-top))
+        14px
+        max(45px, env(safe-area-inset-bottom));
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(27px, 7vw, 43px);
+      line-height: 1.05;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .subtitle {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .status {
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: right;
+    }
+
+    .online {
+      color: var(--green);
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .top-grid {
+      grid-template-columns: 1.05fr 0.95fr;
+    }
+
+    .card {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: rgba(24, 28, 49, 0.96);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .ghost-button,
+    .primary-button,
+    .danger-button {
+      padding: 11px 13px;
+      border-radius: 13px;
+      color: var(--text);
+      font-weight: 750;
+    }
+
+    .ghost-button {
+      background: var(--panel-light);
+    }
+
+    .primary-button {
+      background: linear-gradient(135deg, var(--accent), #6f5be9);
+    }
+
+    .danger-button {
+      background: #44202b;
+      color: #ffb3bd;
+    }
+
+    .leader {
+      display: grid;
+      grid-template-columns: 50px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .leader:last-child {
+      border-bottom: 0;
+    }
+
+    .avatar {
+      display: grid;
+      width: 45px;
+      height: 45px;
+      place-items: center;
+      overflow: hidden;
+      border-radius: 15px;
+      background: var(--panel-light);
+      font-size: 27px;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .member-name {
+      font-weight: 850;
+    }
+
+    .member-title {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .member-points {
+      font-size: 21px;
+      font-weight: 900;
+    }
+
+    label {
+      display: block;
+      margin: 9px 0 5px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 12px;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      outline: none;
+      background: var(--panel-dark);
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--accent);
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 9px;
+      margin-top: 12px;
+    }
+
+    .action {
+      position: relative;
+      min-height: 78px;
+      padding: 12px;
+      color: var(--text);
+      border-radius: 15px;
+      background: var(--panel-light);
+      text-align: left;
+      transition:
+        transform 0.12s ease,
+        background 0.12s ease;
+    }
+
+    .action:active {
+      transform: scale(0.97);
+      background: #303653;
+    }
+
+    .action strong {
+      display: block;
+      padding-right: 38px;
+      font-size: 14px;
+    }
+
+    .action small {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+    }
+
+    .action-points {
+      position: absolute;
+      top: 9px;
+      right: 10px;
+      color: var(--green);
+      font-weight: 900;
+    }
+
+    .history-card {
+      margin-top: 14px;
+    }
+
+    .history {
+      display: grid;
+      max-height: 420px;
+      gap: 8px;
+      overflow-y: auto;
+    }
+
+    .event {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      padding: 11px;
+      border-radius: 13px;
+      background: var(--panel-dark);
+    }
+
+    .event-note,
+    .event-time {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .event-side {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .event-points {
+      color: var(--green);
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .delete-event-button {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      padding: 0;
+      color: #ffb3bd;
+      border: 1px solid rgba(255, 113, 132, 0.22);
+      border-radius: 10px;
+      background: rgba(68, 32, 43, 0.78);
+      font-size: 16px;
+    }
+
+    .delete-event-button:active {
+      transform: scale(0.95);
+    }
+
+    .empty {
+      padding: 20px 0;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    dialog {
+      width: min(94vw, 570px);
+      max-height: 88vh;
+      padding: 18px;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--panel);
+      overflow-y: auto;
+    }
+
+    dialog::backdrop {
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 15px;
+    }
+
+    .pin-box {
+      text-align: center;
+    }
+
+    .pin-input {
+      max-width: 230px;
+      margin: 10px auto 0;
+      font-size: 25px;
+      letter-spacing: 8px;
+      text-align: center;
+    }
+
+    .profile-row {
+      display: grid;
+      grid-template-columns: 50px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .profile-row:last-child {
+      border-bottom: 0;
+    }
+
+    .toast {
+      position: fixed;
+      z-index: 100;
+      bottom: 25px;
+      left: 50%;
+      width: max-content;
+      max-width: 90vw;
+      padding: 12px 16px;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #090d19;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, 25px);
+      transition: 0.25s ease;
+      text-align: center;
+    }
+
+    .toast.visible {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    .level-bar {
+      height: 6px;
+      margin-top: 6px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #0e1222;
+    }
+
+    .level-progress {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), var(--green));
+    }
+
+
+    .achievement-mini-list {
+      display: flex;
+      min-height: 25px;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 7px;
+    }
+
+    .achievement-mini {
+      display: inline-grid;
+      width: 25px;
+      height: 25px;
+      place-items: center;
+      border: 1px solid rgba(255, 198, 92, 0.28);
+      border-radius: 9px;
+      background: rgba(255, 198, 92, 0.1);
+      font-size: 15px;
+    }
+
+    .achievement-mini.more {
+      width: auto;
+      padding: 0 7px;
+      color: var(--yellow);
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .achievement-mini-empty {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .achievements-card {
+      margin-top: 14px;
+    }
+
+    .achievement-filter {
+      width: min(230px, 44vw);
+      margin: 0;
+    }
+
+    .achievement-header-controls {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .compact-button {
+      padding: 9px 10px;
+      border-radius: 11px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .achievement-members {
+      display: grid;
+      gap: 12px;
+    }
+
+    .achievement-member {
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--panel-dark);
+    }
+
+    .achievement-member[open] {
+      border-color: rgba(141, 123, 255, 0.28);
+    }
+
+    .achievement-member-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+      list-style: none;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .achievement-member-header::-webkit-details-marker {
+      display: none;
+    }
+
+    .achievement-member[open] .achievement-member-header {
+      margin-bottom: 10px;
+    }
+
+    .achievement-member-summary-right {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex: 0 0 auto;
+    }
+
+    .collapse-chevron {
+      display: grid;
+      width: 27px;
+      height: 27px;
+      place-items: center;
+      border-radius: 9px;
+      background: var(--panel-light);
+      color: var(--muted);
+      font-size: 15px;
+      transition: transform 0.18s ease;
+    }
+
+    details[open] > summary .collapse-chevron {
+      transform: rotate(180deg);
+    }
+
+    .achievement-member-content {
+      overflow: hidden;
+    }
+
+    .achievement-member-person {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
+    }
+
+    .achievement-member-person .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      font-size: 22px;
+    }
+
+    .achievement-count {
+      flex: 0 0 auto;
+      padding: 6px 9px;
+      color: var(--yellow);
+      border: 1px solid rgba(255, 198, 92, 0.22);
+      border-radius: 999px;
+      background: rgba(255, 198, 92, 0.08);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .achievement-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .achievement-item {
+      display: grid;
+      grid-template-columns: 43px minmax(0, 1fr);
+      gap: 9px;
+      min-height: 108px;
+      padding: 11px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(36, 41, 67, 0.58);
+    }
+
+    .achievement-item.locked {
+      opacity: 0.62;
+      filter: grayscale(0.55);
+    }
+
+    .achievement-item.unlocked {
+      border-color: rgba(255, 198, 92, 0.4);
+      background:
+        radial-gradient(
+          circle at top right,
+          rgba(255, 198, 92, 0.16),
+          transparent 42%
+        ),
+        rgba(36, 41, 67, 0.88);
+    }
+
+    .achievement-icon {
+      display: grid;
+      width: 43px;
+      height: 43px;
+      place-items: center;
+      border-radius: 13px;
+      background: var(--panel-light);
+      font-size: 25px;
+    }
+
+    .achievement-item.unlocked .achievement-icon {
+      background: rgba(255, 198, 92, 0.14);
+      box-shadow: 0 0 20px rgba(255, 198, 92, 0.12);
+    }
+
+    .achievement-name {
+      padding-right: 4px;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .achievement-description {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .achievement-status {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 750;
+    }
+
+    .achievement-item.unlocked .achievement-status {
+      color: var(--yellow);
+    }
+
+    .achievement-progress-bar {
+      height: 5px;
+      margin-top: 5px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #0e1222;
+    }
+
+    .achievement-progress-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), var(--yellow));
+    }
+
+    .statistics-card {
+      margin-top: 14px;
+    }
+
+    .statistics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .statistic-card {
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background:
+        radial-gradient(
+          circle at top right,
+          rgba(141, 123, 255, 0.11),
+          transparent 42%
+        ),
+        var(--panel-dark);
+    }
+
+    .statistic-heading {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 10px;
+    }
+
+    .statistic-icon {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      flex: 0 0 auto;
+      place-items: center;
+      border-radius: 12px;
+      background: var(--panel-light);
+      font-size: 22px;
+    }
+
+    .statistic-title {
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .statistic-unit {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .statistic-ranking {
+      display: grid;
+      gap: 6px;
+    }
+
+    .statistic-row {
+      display: grid;
+      grid-template-columns: 25px 30px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 7px;
+      min-height: 38px;
+      padding: 5px 7px;
+      border-radius: 11px;
+      background: rgba(36, 41, 67, 0.5);
+    }
+
+    .statistic-row:first-child {
+      border: 1px solid rgba(255, 198, 92, 0.22);
+      background: rgba(255, 198, 92, 0.08);
+    }
+
+    .statistic-medal {
+      font-size: 16px;
+      text-align: center;
+    }
+
+    .statistic-avatar {
+      display: grid;
+      width: 30px;
+      height: 30px;
+      place-items: center;
+      overflow: hidden;
+      border-radius: 10px;
+      background: var(--panel-light);
+      font-size: 18px;
+    }
+
+    .statistic-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .statistic-name {
+      min-width: 0;
+      overflow: hidden;
+      font-size: 13px;
+      font-weight: 800;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .statistic-value {
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .statistic-empty {
+      padding: 16px 6px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .season-card {
+      margin-top: 14px;
+    }
+
+    .season-select {
+      width: min(230px, 46vw);
+      margin: 0;
+    }
+
+    .season-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      gap: 12px;
+    }
+
+    .season-panel,
+    .hall-panel {
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--panel-dark);
+    }
+
+    .season-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 11px;
+    }
+
+    .season-name {
+      font-size: 17px;
+      font-weight: 900;
+    }
+
+    .season-dates {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .season-chip {
+      flex: 0 0 auto;
+      padding: 6px 9px;
+      color: var(--green);
+      border: 1px solid rgba(69, 215, 160, 0.25);
+      border-radius: 999px;
+      background: rgba(69, 215, 160, 0.08);
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .season-chip.finished {
+      color: var(--muted);
+      border-color: var(--border);
+      background: var(--panel-light);
+    }
+
+    .season-ranking {
+      display: grid;
+      gap: 7px;
+    }
+
+    .season-row {
+      display: grid;
+      grid-template-columns: 27px 34px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 6px 8px;
+      border-radius: 12px;
+      background: rgba(36, 41, 67, 0.52);
+    }
+
+    .season-row:first-child {
+      border: 1px solid rgba(255, 198, 92, 0.28);
+      background: rgba(255, 198, 92, 0.09);
+    }
+
+    .season-rank {
+      text-align: center;
+      font-weight: 900;
+    }
+
+    .season-person {
+      min-width: 0;
+      overflow: hidden;
+      font-size: 13px;
+      font-weight: 850;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .season-points {
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .hall-title {
+      margin-bottom: 10px;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .hall-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .hall-winner {
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 9px;
+      padding: 9px;
+      border-radius: 13px;
+      background: rgba(141, 123, 255, 0.08);
+    }
+
+    .hall-crown {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border-radius: 12px;
+      background: var(--panel-light);
+      font-size: 22px;
+    }
+
+    .hall-season {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .hall-points {
+      color: var(--yellow);
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .record-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .record-card {
+      padding: 11px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--panel-dark);
+    }
+
+    .record-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 750;
+    }
+
+    .record-value {
+      margin-top: 5px;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .record-detail {
+      margin-top: 2px;
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .profile-card {
+      padding: 13px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .profile-card:last-child {
+      border-bottom: 0;
+    }
+
+    .profile-card-header {
+      display: grid;
+      grid-template-columns: 50px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+      list-style: none;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .profile-card-header::-webkit-details-marker {
+      display: none;
+    }
+
+    .profile-card-actions {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .profile-card-content {
+      padding-top: 10px;
+    }
+
+    .profile-level-text {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .profile-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+      margin-top: 10px;
+    }
+
+    .profile-metric {
+      padding: 8px;
+      border-radius: 11px;
+      background: var(--panel-dark);
+      text-align: center;
+    }
+
+    .profile-metric strong {
+      display: block;
+      color: var(--green);
+      font-size: 14px;
+    }
+
+    .profile-metric span {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .profile-top-category {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .confetti-piece {
+      position: fixed;
+      z-index: 999;
+      top: -40px;
+      pointer-events: none;
+      animation: confetti-fall linear forwards;
+      will-change: transform, opacity;
+    }
+
+    @keyframes confetti-fall {
+      0% {
+        opacity: 1;
+        transform: translate3d(0, -20px, 0) rotate(0deg);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate3d(var(--drift), 110vh, 0) rotate(760deg);
+      }
+    }
+
+    @keyframes achievement-pop {
+      0% { transform: scale(0.96); }
+      55% { transform: scale(1.025); }
+      100% { transform: scale(1); }
+    }
+
+    .achievement-item.unlocked {
+      animation: achievement-pop 0.35s ease;
+    }
+
+    @media (max-width: 780px) {
+      .top-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 430px) {
+      header {
+        align-items: center;
+      }
+
+      .actions {
+        grid-template-columns: 1fr;
+      }
+
+      .action {
+        min-height: 68px;
+      }
+
+      .section-header {
+        align-items: flex-start;
+      }
+
+      .achievement-header-controls {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .achievement-filter {
+        width: 100%;
+        min-width: 132px;
+      }
+
+      .compact-button {
+        flex: 1 1 auto;
+      }
+
+      .achievement-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .statistics-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .season-layout,
+      .record-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .season-select {
+        width: 42vw;
+        min-width: 132px;
+      }
+
+      .profile-metrics {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <header>
+      <div>
+        <h1>🏆 Achievementy<br>dospělosti</h1>
+        <div class="subtitle">
+          Společná liga běžného chaosu
+        </div>
+      </div>
+
+      <div>
+        <div id="connectionStatus" class="status">
+          Připojuji…
+        </div>
+
+        <div id="seasonStatus" class="status"></div>
+
+        <button
+          class="ghost-button"
+          type="button"
+          onclick="openProfiles()"
+        >
+          👤 Profily
+        </button>
+      </div>
+    </header>
+
+    <div class="grid top-grid">
+      <section class="card">
+        <div class="section-header">
+          <h2>Žebříček</h2>
+
+          <button
+            class="ghost-button"
+            type="button"
+            onclick="undoLastEvent()"
+          >
+            ↩ Vrátit poslední
+          </button>
+        </div>
+
+        <div id="leaderboard"></div>
+      </section>
+
+      <section class="card">
+        <h2>Přidat body</h2>
+
+        <label for="memberSelect">Komu</label>
+        <select id="memberSelect"></select>
+
+        <label for="noteInput">Poznámka</label>
+        <input
+          id="noteInput"
+          maxlength="150"
+          placeholder="Co zase provedl/a?"
+        >
+
+        <div id="actions" class="actions"></div>
+      </section>
+    </div>
+
+
+    <section class="card season-card">
+      <div class="section-header">
+        <div>
+          <h2>🏆 Sezóny a síň slávy</h2>
+          <div class="subtitle">
+            Každá sezóna má vlastní bodování a vítěze.
+          </div>
+        </div>
+
+        <select
+          id="seasonSelect"
+          class="season-select"
+          aria-label="Vybrat sezónu"
+          onchange="renderSeasonOverview()"
+        ></select>
+      </div>
+
+      <div id="seasonOverview"></div>
+    </section>
+
+    <section class="card achievements-card">
+      <div class="section-header">
+        <div>
+          <h2>🏅 Achievementy</h2>
+          <div class="subtitle">
+            Odemykají se automaticky podle bodů a událostí.
+          </div>
+        </div>
+
+        <div class="achievement-header-controls">
+          <select
+            id="achievementMemberFilter"
+            class="achievement-filter"
+            aria-label="Vybrat člena"
+            onchange="renderAchievements()"
+          >
+            <option value="all">Všichni</option>
+          </select>
+
+          <button
+            class="ghost-button compact-button"
+            type="button"
+            onclick="setAchievementMembersOpen(true)"
+          >
+            Rozbalit vše
+          </button>
+
+          <button
+            class="ghost-button compact-button"
+            type="button"
+            onclick="setAchievementMembersOpen(false)"
+          >
+            Sbalit vše
+          </button>
+        </div>
+      </div>
+
+      <div id="achievements"></div>
+    </section>
+
+    <section class="card statistics-card">
+      <div class="section-header">
+        <div>
+          <h2>📊 Statistiky party</h2>
+          <div class="subtitle">
+            Průběžné pořadí podle celé historie událostí.
+          </div>
+        </div>
+      </div>
+
+      <div id="statistics"></div>
+    </section>
+
+    <section class="card history-card">
+      <div class="section-header">
+        <h2>Historie událostí</h2>
+
+        <button
+          class="ghost-button"
+          type="button"
+          onclick="loadData()"
+        >
+          🔄 Obnovit
+        </button>
+      </div>
+
+      <div id="history" class="history"></div>
+    </section>
+  </main>
+
+  <dialog id="pinDialog">
+    <div class="pin-box">
+      <h2>Společný PIN</h2>
+
+      <p class="subtitle">
+        PIN je potřeba pouze pro změny.
+      </p>
+
+      <input
+        id="pinInput"
+        class="pin-input"
+        type="password"
+        inputmode="numeric"
+        maxlength="8"
+        placeholder="••••"
+      >
+
+      <div class="modal-actions" style="justify-content:center">
+        <button
+          class="ghost-button"
+          type="button"
+          onclick="closePinDialog()"
+        >
+          Zrušit
+        </button>
+
+        <button
+          class="primary-button"
+          type="button"
+          onclick="confirmPin()"
+        >
+          Odemknout
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="profilesDialog">
+    <div class="section-header">
+      <div>
+        <h2>Profily členů</h2>
+        <div class="subtitle">
+          Levely, statistiky, medaile a úprava profilu.
+        </div>
+      </div>
+    </div>
+
+    <div id="profilesList"></div>
+
+    <div class="modal-actions">
+      <button
+        class="ghost-button"
+        type="button"
+        onclick="profilesDialog.close()"
+      >
+        Zavřít
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="editProfileDialog">
+    <h2>Upravit profil</h2>
+
+    <input id="editMemberId" type="hidden">
+
+    <label for="editName">Jméno</label>
+    <input
+      id="editName"
+      maxlength="40"
+      placeholder="Jméno"
+    >
+
+    <label for="editAvatar">Avatar</label>
+    <input
+      id="editAvatar"
+      maxlength="300"
+      placeholder="Emoji nebo odkaz na obrázek"
+    >
+
+    <div class="subtitle">
+      Příklad emoji: 👩‍🦰<br>
+      Nebo vlož přímý odkaz na obrázek.
+    </div>
+
+    <label for="editGender">Ocenění</label>
+    <select id="editGender">
+      <option value="woman">Super žena</option>
+      <option value="man">Super muž</option>
+      <option value="other">Bez rozlišení</option>
+    </select>
+
+    <div class="modal-actions">
+      <button
+        class="ghost-button"
+        type="button"
+        onclick="editProfileDialog.close()"
+      >
+        Zrušit
+      </button>
+
+      <button
+        class="primary-button"
+        type="button"
+        onclick="saveProfile()"
+      >
+        Uložit
+      </button>
+    </div>
+  </dialog>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const SUPABASE_URL =
+      "https://vmxmpnaaokpstnqvtytl.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_iMxPMJOymDacEI-_Q4tLig_GT5RAnFu";
+
+    const database = supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+    const categories = [
+      {
+        key: "food",
+        icon: "🍕",
+        label: "Fotka jídla",
+        points: 2
+      },
+      {
+        key: "alcohol",
+        icon: "🍷",
+        label: "Fotka alkoholu",
+        points: 2
+      },
+      {
+        key: "exercise",
+        icon: "💪",
+        label: "Cvičení",
+        points: 5
+      },
+      {
+        key: "illness",
+        icon: "🤒",
+        label: "Nemoc",
+        points: 2
+      },
+      {
+        key: "busy",
+        icon: "😩",
+        label: "Nic nestíhám",
+        points: 3
+      },
+      {
+        key: "work",
+        icon: "💼",
+        label: "Mám hodně práce",
+        points: 4
+      },
+      {
+        key: "property",
+        icon: "🏠",
+        label: "Práce na nemovitosti",
+        points: 4
+      },
+      {
+        key: "garden",
+        icon: "🌿",
+        label: "Práce na zahradě",
+        points: 4
+      },
+      {
+        key: "holiday",
+        icon: "✈️",
+        label: "Dovolená",
+        points: 5
+      },
+      {
+        key: "packing",
+        icon: "🧳",
+        label: "Balení na dovolenou",
+        points: 4
+      },
+      {
+        key: "selfie",
+        icon: "📸",
+        label: "Fotka při činnosti",
+        points: 4
+      },
+      {
+        key: "coffee",
+        icon: "☕",
+        label: "Kafe",
+        points: 2
+      },
+      {
+        key: "shopping",
+        icon: "🛒",
+        label: "Nákup",
+        points: 2
+      },
+      {
+        key: "persuasion",
+        icon: "🗣️",
+        label: "Přesvědčování ostatních",
+        points: 4
+      },
+      {
+        key: "discussion",
+        icon: "🔥",
+        label: "Divoká diskuze",
+        points: 5
+      },
+      {
+        key: "party",
+        icon: "🎉",
+        label: "Oslava nebo párty",
+        points: 4
+      }
+    ];
+
+    const statisticDefinitions = [
+      {
+        key: "coffee_count",
+        icon: "☕",
+        title: "Kávový šampion",
+        unit: "káv"
+      },
+      {
+        key: "exercise_count",
+        icon: "💪",
+        title: "Nejvíc cvičí",
+        unit: "cvičení"
+      },
+      {
+        key: "work_count",
+        icon: "💼",
+        title: "Nejvíc pracuje",
+        unit: "pracovních návalů"
+      },
+      {
+        key: "alcohol_count",
+        icon: "🍷",
+        title: "Alkoholová liga",
+        unit: "alkoholových událostí"
+      },
+      {
+        key: "holiday_count",
+        icon: "✈️",
+        title: "Největší cestovatel",
+        unit: "dovolených"
+      },
+      {
+        key: "food_count",
+        icon: "🍕",
+        title: "Největší foodblogger",
+        unit: "fotek jídla"
+      },
+      {
+        key: "total_events",
+        icon: "⚡",
+        title: "Nejaktivnější člen",
+        unit: "událostí celkem"
+      }
+    ];
+
+    const levels = [
+      {
+        min: 0,
+        icon: "🌱",
+        title: "Nováček"
+      },
+      {
+        min: 20,
+        icon: "🎯",
+        title: "Funkční dospělý"
+      },
+      {
+        min: 50,
+        icon: "⭐",
+        title: "Manažer chaosu"
+      },
+      {
+        min: 100,
+        icon: "💎",
+        title: "Mistr dospělosti"
+      },
+      {
+        min: 200,
+        icon: "👑",
+        title: "Legenda skupiny"
+      },
+      {
+        min: 350,
+        icon: "🦄",
+        title: "Mýtická bytost"
+      }
+    ];
+
+    const categoryComments = {
+      food: [
+        "{name} znovu dokazuje, že telefon jí jako první.",
+        "{name} povýšil/a obyčejné jídlo na kulturní událost.",
+        "Foodblogger {name} právě rozšířil/a portfolio."
+      ],
+      alcohol: [
+        "{name} pečuje o tekutou rovnováhu skupiny.",
+        "{name} právě přidal/a další kapitolu do vinné kroniky.",
+        "Someliérská komise bere výkon {name} na vědomí."
+      ],
+      exercise: [
+        "{name} skutečně cvičil/a. Máme to černé na bílém.",
+        "{name} právě zvýšil/a průměrnou kondici celé skupiny.",
+        "Fitness éra {name} pokračuje."
+      ],
+      illness: [
+        "{name} sbírá body i v režimu biologické poruchy.",
+        "{name} hlásí nemoc. Dospělost odmítla dát volno.",
+        "Imunita {name} dnes neobhájila rozpočet."
+      ],
+      busy: [
+        "{name} nestíhá tak profesionálně, že za to dostává body.",
+        "Kalendář {name} právě požádal o ochranu svědků.",
+        "{name} má opět více úkolů než hodin."
+      ],
+      work: [
+        "{name} objevil/a další práci, kterou nikdo nehledal.",
+        "Výkon {name} dnes opět překročil bezpečnou normu.",
+        "{name} právě zachránil/a tabulku, projekt nebo svět."
+      ],
+      property: [
+        "{name} zase zvyšuje hodnotu nemovitosti i míru vyčerpání.",
+        "Developer {name} hlásí další stavební zásah.",
+        "{name} právě opravil/a něco, co včera ještě fungovalo."
+      ],
+      garden: [
+        "{name} vyjednává s přírodou z pozice síly.",
+        "Zahrada {name} právě dostala další pracovní směnu.",
+        "{name} opět dokazuje, že hlína je životní styl."
+      ],
+      holiday: [
+        "{name} dočasně opouští chaos domácího prostředí.",
+        "Cestovatel {name} právě rozšířil/a mapu únikových cest.",
+        "{name} hlásí dovolenou. Závist byla automaticky aktivována."
+      ],
+      packing: [
+        "{name} balí polovinu domácnosti pro případ apokalypsy.",
+        "Kufr {name} právě překročil plánovanou kapacitu.",
+        "{name} zahájil/a tradiční disciplínu: co jsme zapomněli?"
+      ],
+      selfie: [
+        "{name} poskytl/a důkaz, že aktivita skutečně proběhla.",
+        "Dokumentace výkonu {name} byla úspěšně přijata.",
+        "{name} pracuje a zároveň buduje osobní značku."
+      ],
+      coffee: [
+        "{name} právě zachránil/a ekonomiku další kávou.",
+        "Kofeinový systém {name} byl úspěšně restartován.",
+        "{name} doplnil/a palivo pro další kolo dospělosti."
+      ],
+      shopping: [
+        "{name} podpořil/a ekonomiku cíleným nákupem.",
+        "Peněženka {name} právě zaznamenala další strategický zásah.",
+        "{name} koupil/a něco, co bylo téměř určitě potřeba."
+      ],
+      persuasion: [
+        "{name} právě vysvětlil/a ostatním jejich správný názor.",
+        "Argumentační oddělení {name} opět zasáhlo.",
+        "{name} přesvědčuje. Odpor je statisticky nevýhodný."
+      ],
+      discussion: [
+        "{name} vstoupil/a do diskuze a teplota místnosti stoupla.",
+        "Debatní režim {name} byl aktivován.",
+        "{name} právě proměnil/a názorovou výměnu v hlavní program."
+      ],
+      party: [
+        "{name} investuje do společenského kapitálu.",
+        "Párty režim {name} byl úspěšně potvrzen.",
+        "{name} právě zvýšil/a hlučnost i morálku skupiny."
+      ],
+      generic: [
+        "{name} získává body. Dospělost pokračuje.",
+        "Žebříček se právě otřásl zásluhou {name}.",
+        "{name} přidal/a další důkaz běžného chaosu."
+      ]
+    };
+
+    let members = [];
+    let events = [];
+    let achievementProgress = [];
+    let achievementLoadError = "";
+    let memberStatistics = [];
+    let statisticsLoadError = "";
+    let seasons = [];
+    let seasonStatistics = [];
+    let hallOfFame = [];
+    let seasonLoadError = "";
+    let openAchievementMembers = new Set();
+    let openProfileMembers = new Set();
+    let pendingAction = null;
+
+    let savedPin =
+      sessionStorage.getItem("achievements_pin") || "";
+
+    const pinDialog =
+      document.getElementById("pinDialog");
+
+    const profilesDialog =
+      document.getElementById("profilesDialog");
+
+    const editProfileDialog =
+      document.getElementById("editProfileDialog");
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(
+        /[&<>"']/g,
+        character => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;"
+        })[character]
+      );
+    }
+
+    function showToast(message, duration = 2400) {
+      const toast = document.getElementById("toast");
+
+      toast.textContent = message;
+      toast.classList.add("visible");
+
+      window.setTimeout(() => {
+        toast.classList.remove("visible");
+      }, duration);
+    }
+
+    function avatarHtml(value) {
+      const avatar = value || "🙂";
+
+      if (/^https?:\/\//i.test(avatar)) {
+        return `
+          <span class="avatar">
+            <img
+              src="${escapeHtml(avatar)}"
+              alt="Avatar"
+              onerror="this.parentElement.innerHTML='🙂'"
+            >
+          </span>
+        `;
+      }
+
+      return `
+        <span class="avatar">
+          ${escapeHtml(avatar)}
+        </span>
+      `;
+    }
+
+    function levelForPoints(points) {
+      const numericPoints = Math.max(Number(points) || 0, 0);
+
+      return [...levels]
+        .reverse()
+        .find(level => numericPoints >= level.min) || levels[0];
+    }
+
+    function nextLevelForPoints(points) {
+      const numericPoints = Math.max(Number(points) || 0, 0);
+      return levels.find(level => level.min > numericPoints) || null;
+    }
+
+    function memberTitle(member) {
+      const level = levelForPoints(member.points);
+      return `${level.icon} ${level.title}`;
+    }
+
+    function levelProgress(points) {
+      const numericPoints = Math.max(Number(points) || 0, 0);
+      const current = levelForPoints(numericPoints);
+      const next = nextLevelForPoints(numericPoints);
+
+      if (!next) {
+        return 100;
+      }
+
+      const range = Math.max(next.min - current.min, 1);
+      const gained = numericPoints - current.min;
+
+      return Math.min(
+        100,
+        Math.max(0, Math.round(gained / range * 100))
+      );
+    }
+
+    function levelCaption(points) {
+      const next = nextLevelForPoints(points);
+
+      if (!next) {
+        return "Nejvyšší level dosažen";
+      }
+
+      const missing = Math.max(next.min - Number(points || 0), 0);
+      return `${missing} bodů do levelu ${next.icon} ${next.title}`;
+    }
+
+    function errorMessage(error) {
+      const message = error?.message || "Nastala chyba.";
+
+      if (message.includes("Špatný PIN")) {
+        savedPin = "";
+        sessionStorage.removeItem("achievements_pin");
+        return "Špatný PIN.";
+      }
+
+      return message;
+    }
+
+    async function loadData() {
+      const status =
+        document.getElementById("connectionStatus");
+
+      status.textContent = "Načítám…";
+      status.classList.remove("online");
+
+      const membersRequest = database
+        .from("members")
+        .select("*")
+        .order("points", { ascending: false });
+
+      const eventsRequest = database
+        .from("events")
+        .select(`
+          id,
+          member_id,
+          category,
+          label,
+          event_icon,
+          points,
+          note,
+          created_at,
+          members (
+            name,
+            avatar
+          )
+        `)
+        .order("created_at", { ascending: false })
+        .limit(500);
+
+      const achievementsRequest = database
+        .from("achievement_progress")
+        .select("*")
+        .order("member_name", { ascending: true })
+        .order("sort_order", { ascending: true });
+
+      const statisticsRequest = database
+        .from("member_statistics")
+        .select("*")
+        .order("total_points", { ascending: false });
+
+      const seasonsRequest = database
+        .from("seasons")
+        .select("*")
+        .order("starts_on", { ascending: true });
+
+      const seasonStatisticsRequest = database
+        .from("season_member_statistics")
+        .select("*")
+        .order("season_id", { ascending: true })
+        .order("season_points", { ascending: false });
+
+      const hallOfFameRequest = database
+        .from("hall_of_fame")
+        .select("*")
+        .order("ends_on", { ascending: false });
+
+      const [
+        membersResponse,
+        eventsResponse,
+        achievementsResponse,
+        statisticsResponse,
+        seasonsResponse,
+        seasonStatisticsResponse,
+        hallOfFameResponse
+      ] = await Promise.all([
+        membersRequest,
+        eventsRequest,
+        achievementsRequest,
+        statisticsRequest,
+        seasonsRequest,
+        seasonStatisticsRequest,
+        hallOfFameRequest
+      ]);
+
+      if (
+        membersResponse.error ||
+        eventsResponse.error
+      ) {
+        status.textContent = "Chyba připojení";
+
+        showToast(
+          membersResponse.error?.message ||
+          eventsResponse.error?.message
+        );
+
+        return;
+      }
+
+      members = membersResponse.data || [];
+      events = eventsResponse.data || [];
+
+      if (achievementsResponse.error) {
+        achievementProgress = [];
+        achievementLoadError =
+          achievementsResponse.error.message ||
+          "Achievementy se nepodařilo načíst.";
+      } else {
+        achievementProgress =
+          achievementsResponse.data || [];
+        achievementLoadError = "";
+      }
+
+      if (statisticsResponse.error) {
+        memberStatistics = [];
+        statisticsLoadError =
+          statisticsResponse.error.message ||
+          "Statistiky se nepodařilo načíst.";
+      } else {
+        memberStatistics =
+          statisticsResponse.data || [];
+        statisticsLoadError = "";
+      }
+
+      if (
+        seasonsResponse.error ||
+        seasonStatisticsResponse.error ||
+        hallOfFameResponse.error
+      ) {
+        seasons = seasonsResponse.data || [];
+        seasonStatistics = seasonStatisticsResponse.data || [];
+        hallOfFame = hallOfFameResponse.data || [];
+        seasonLoadError =
+          seasonsResponse.error?.message ||
+          seasonStatisticsResponse.error?.message ||
+          hallOfFameResponse.error?.message ||
+          "Sezóny se nepodařilo načíst.";
+      } else {
+        seasons = seasonsResponse.data || [];
+        seasonStatistics = seasonStatisticsResponse.data || [];
+        hallOfFame = hallOfFameResponse.data || [];
+        seasonLoadError = "";
+      }
+
+      renderAll();
+
+      status.textContent = "● Online";
+      status.classList.add("online");
+
+      if (
+        achievementLoadError ||
+        statisticsLoadError ||
+        seasonLoadError
+      ) {
+        showToast(
+          "Aplikace funguje, ale část přehledů se nenačetla."
+        );
+      }
+    }
+
+    function renderAll() {
+      renderSeasonFilter();
+      renderSeasonOverview();
+      renderAchievementFilter();
+      renderLeaderboard();
+      renderMemberSelect();
+      renderActions();
+      renderAchievements();
+      renderStatistics();
+      renderHistory();
+    }
+
+    function dateFromDatabase(value) {
+      return new Date(`${value}T00:00:00`);
+    }
+
+    function formatSeasonDate(value) {
+      if (!value) {
+        return "";
+      }
+
+      return dateFromDatabase(value).toLocaleDateString(
+        "cs-CZ",
+        {
+          day: "numeric",
+          month: "numeric",
+          year: "numeric"
+        }
+      );
+    }
+
+    function activeSeason() {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      return seasons.find(season => {
+        const start = dateFromDatabase(season.starts_on);
+        const end = dateFromDatabase(season.ends_on);
+        return today >= start && today <= end;
+      }) || null;
+    }
+
+    function selectedSeason() {
+      const select = document.getElementById("seasonSelect");
+      const selectedId = select?.value;
+
+      return seasons.find(
+        season => String(season.id) === String(selectedId)
+      ) || activeSeason() || seasons.at(-1) || null;
+    }
+
+    function renderSeasonFilter() {
+      const select = document.getElementById("seasonSelect");
+
+      if (!select) {
+        return;
+      }
+
+      const previous = select.value;
+      const current = activeSeason();
+
+      select.innerHTML = seasons
+        .map(season => `
+          <option value="${season.id}">
+            ${escapeHtml(season.icon || "🏆")}
+            ${escapeHtml(season.name)}
+          </option>
+        `)
+        .join("");
+
+      if (
+        previous &&
+        seasons.some(season => String(season.id) === previous)
+      ) {
+        select.value = previous;
+      } else if (current) {
+        select.value = String(current.id);
+      }
+    }
+
+    function renderSeasonOverview() {
+      const container =
+        document.getElementById("seasonOverview");
+
+      const seasonStatus =
+        document.getElementById("seasonStatus");
+
+      if (!container) {
+        return;
+      }
+
+      if (seasonLoadError) {
+        container.innerHTML = `
+          <div class="empty">
+            Sezóny se nepodařilo načíst.<br>
+            ${escapeHtml(seasonLoadError)}
+          </div>
+        `;
+
+        if (seasonStatus) {
+          seasonStatus.textContent = "";
+        }
+        return;
+      }
+
+      const season = selectedSeason();
+
+      if (!season) {
+        container.innerHTML = `
+          <div class="empty">
+            Sezónní data nejsou dostupná. Spusť opravný SQL balík a obnov stránku.
+          </div>
+        `;
+        return;
+      }
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const start = dateFromDatabase(season.starts_on);
+      const end = dateFromDatabase(season.ends_on);
+      const isActive = today >= start && today <= end;
+      const isFinished = today > end;
+
+      if (seasonStatus) {
+        const current = activeSeason();
+        seasonStatus.textContent = current
+          ? `${current.icon || "🏆"} ${current.name}`
+          : "";
+      }
+
+      const ranking = seasonStatistics
+        .filter(
+          row => String(row.season_id) === String(season.id)
+        )
+        .sort((first, second) => {
+          const pointsDifference =
+            Number(second.season_points || 0) -
+            Number(first.season_points || 0);
+
+          if (pointsDifference !== 0) {
+            return pointsDifference;
+          }
+
+          const eventsDifference =
+            Number(second.season_events || 0) -
+            Number(first.season_events || 0);
+
+          if (eventsDifference !== 0) {
+            return eventsDifference;
+          }
+
+          return String(first.member_name).localeCompare(
+            String(second.member_name),
+            "cs"
+          );
+        });
+
+      const hallItems = hallOfFame.slice(0, 6);
+
+      container.innerHTML = `
+        <div class="season-layout">
+          <div class="season-panel">
+            <div class="season-panel-header">
+              <div>
+                <div class="season-name">
+                  ${escapeHtml(season.icon || "🏆")}
+                  ${escapeHtml(season.name)}
+                </div>
+
+                <div class="season-dates">
+                  ${formatSeasonDate(season.starts_on)} –
+                  ${formatSeasonDate(season.ends_on)}
+                </div>
+              </div>
+
+              <div class="season-chip ${isFinished ? "finished" : ""}">
+                ${
+                  isActive
+                    ? "Právě probíhá"
+                    : isFinished
+                      ? "Ukončeno"
+                      : "Připravuje se"
+                }
+              </div>
+            </div>
+
+            <div class="season-ranking">
+              ${ranking
+                .map((row, index) => `
+                  <div class="season-row">
+                    <div class="season-rank">
+                      ${["🥇", "🥈", "🥉"][index] || `${index + 1}.`}
+                    </div>
+
+                    ${statisticAvatarHtml(row.avatar)}
+
+                    <div class="season-person">
+                      ${escapeHtml(row.member_name)}
+                    </div>
+
+                    <div class="season-points">
+                      ${Number(row.season_points || 0)} b
+                    </div>
+                  </div>
+                `)
+                .join("")}
+            </div>
+          </div>
+
+          <div class="hall-panel">
+            <div class="hall-title">👑 Síň slávy</div>
+
+            ${
+              hallItems.length
+                ? `
+                  <div class="hall-list">
+                    ${hallItems
+                      .map(item => `
+                        <div class="hall-winner">
+                          <div class="hall-crown">👑</div>
+
+                          <div>
+                            <div class="member-name">
+                              ${escapeHtml(item.member_name)}
+                            </div>
+                            <div class="hall-season">
+                              ${escapeHtml(item.season_name)}
+                            </div>
+                          </div>
+
+                          <div class="hall-points">
+                            ${Number(item.season_points || 0)} b
+                          </div>
+                        </div>
+                      `)
+                      .join("")}
+                  </div>
+                `
+                : `
+                  <div class="empty">
+                    První vítěz se zapíše po skončení sezóny.
+                  </div>
+                `
+            }
+          </div>
+        </div>
+      `;
+    }
+
+    function randomItem(items) {
+      return items[Math.floor(Math.random() * items.length)];
+    }
+
+    function commentFor(memberName, categoryKey) {
+      const templates =
+        categoryComments[categoryKey] || categoryComments.generic;
+
+      return randomItem(templates).replaceAll(
+        "{name}",
+        memberName || "Někdo"
+      );
+    }
+
+    function launchConfetti() {
+      const symbols = ["✨", "🎉", "⭐", "🏆", "💜", "🎊"];
+
+      for (let index = 0; index < 42; index += 1) {
+        const piece = document.createElement("span");
+        piece.className = "confetti-piece";
+        piece.textContent = randomItem(symbols);
+        piece.style.left = `${Math.random() * 100}vw`;
+        piece.style.fontSize = `${12 + Math.random() * 15}px`;
+        piece.style.setProperty(
+          "--drift",
+          `${-90 + Math.random() * 180}px`
+        );
+        piece.style.animationDuration = `${1.8 + Math.random() * 1.6}s`;
+        piece.style.animationDelay = `${Math.random() * 0.35}s`;
+
+        document.body.appendChild(piece);
+
+        window.setTimeout(() => {
+          piece.remove();
+        }, 3800);
+      }
+    }
+
+    function celebrate(message) {
+      launchConfetti();
+      showToast(message, 3600);
+    }
+
+    function achievementApplies(item) {
+      if (
+        item.achievement_key === "super_woman"
+      ) {
+        return item.gender === "woman";
+      }
+
+      if (
+        item.achievement_key === "super_man"
+      ) {
+        return item.gender === "man";
+      }
+
+      return true;
+    }
+
+    function achievementsForMember(memberId) {
+      return achievementProgress
+        .filter(
+          item =>
+            String(item.member_id) === String(memberId)
+        )
+        .filter(achievementApplies)
+        .sort(
+          (first, second) =>
+            Number(first.sort_order || 0) -
+            Number(second.sort_order || 0)
+        );
+    }
+
+    function achievementPercent(item) {
+      const current =
+        Math.max(Number(item.current_value) || 0, 0);
+
+      const target =
+        Math.max(Number(item.target_value) || 0, 1);
+
+      return Math.min(
+        100,
+        Math.round(current / target * 100)
+      );
+    }
+
+    function achievementBadgesHtml(memberId) {
+      const unlocked = achievementsForMember(memberId)
+        .filter(item => item.unlocked);
+
+      if (!unlocked.length) {
+        return `
+          <div class="achievement-mini-list">
+            <span class="achievement-mini-empty">
+              Zatím bez medaile
+            </span>
+          </div>
+        `;
+      }
+
+      const visible = unlocked.slice(0, 6);
+      const hiddenCount =
+        Math.max(unlocked.length - visible.length, 0);
+
+      return `
+        <div
+          class="achievement-mini-list"
+          aria-label="Odemčené achievementy"
+        >
+          ${visible
+            .map(item => `
+              <span
+                class="achievement-mini"
+                title="${escapeHtml(item.achievement_name)}"
+              >
+                ${escapeHtml(item.icon)}
+              </span>
+            `)
+            .join("")}
+
+          ${
+            hiddenCount
+              ? `
+                <span
+                  class="achievement-mini more"
+                  title="Další achievementy"
+                >
+                  +${hiddenCount}
+                </span>
+              `
+              : ""
+          }
+        </div>
+      `;
+    }
+
+    function renderAchievementFilter() {
+      const select =
+        document.getElementById(
+          "achievementMemberFilter"
+        );
+
+      if (!select) {
+        return;
+      }
+
+      const previousValue = select.value || "all";
+
+      select.innerHTML = `
+        <option value="all">Všichni</option>
+        ${members
+          .map(member => `
+            <option value="${member.id}">
+              ${escapeHtml(member.name)}
+            </option>
+          `)
+          .join("")}
+      `;
+
+      if (
+        previousValue === "all" ||
+        members.some(
+          member =>
+            String(member.id) === previousValue
+        )
+      ) {
+        select.value = previousValue;
+      }
+    }
+
+    function rememberAchievementOpen(memberId, isOpen) {
+      const key = String(memberId);
+
+      if (isOpen) {
+        openAchievementMembers.add(key);
+      } else {
+        openAchievementMembers.delete(key);
+      }
+    }
+
+    function setAchievementMembersOpen(isOpen) {
+      const container =
+        document.getElementById("achievements");
+
+      if (!container) {
+        return;
+      }
+
+      container
+        .querySelectorAll("details.achievement-member")
+        .forEach(details => {
+          details.open = isOpen;
+
+          const memberId = details.dataset.memberId;
+
+          if (isOpen) {
+            openAchievementMembers.add(memberId);
+          } else {
+            openAchievementMembers.delete(memberId);
+          }
+        });
+    }
+
+    function rememberProfileOpen(memberId, isOpen) {
+      const key = String(memberId);
+
+      if (isOpen) {
+        openProfileMembers.add(key);
+      } else {
+        openProfileMembers.delete(key);
+      }
+    }
+
+    function renderAchievements() {
+      const container =
+        document.getElementById("achievements");
+
+      if (!container) {
+        return;
+      }
+
+      if (achievementLoadError) {
+        container.innerHTML = `
+          <div class="empty">
+            Achievementy se nepodařilo načíst.<br>
+            ${escapeHtml(achievementLoadError)}
+          </div>
+        `;
+        return;
+      }
+
+      if (!achievementProgress.length) {
+        container.innerHTML = `
+          <div class="empty">
+            Zatím nejsou dostupná žádná ocenění.
+          </div>
+        `;
+        return;
+      }
+
+      const filter =
+        document.getElementById(
+          "achievementMemberFilter"
+        )?.value || "all";
+
+      const visibleMembers = members.filter(
+        member =>
+          filter === "all" ||
+          String(member.id) === filter
+      );
+
+      container.innerHTML = `
+        <div class="achievement-members">
+          ${visibleMembers
+            .map(member => {
+              const items =
+                achievementsForMember(member.id);
+
+              const unlockedCount = items.filter(
+                item => item.unlocked
+              ).length;
+
+              const memberKey = String(member.id);
+              const shouldOpen =
+                filter !== "all" ||
+                openAchievementMembers.has(memberKey);
+
+              return `
+                <details
+                  class="achievement-member"
+                  data-member-id="${member.id}"
+                  ${shouldOpen ? "open" : ""}
+                  ontoggle="rememberAchievementOpen(${member.id}, this.open)"
+                >
+                  <summary class="achievement-member-header">
+                    <div class="achievement-member-person">
+                      ${avatarHtml(member.avatar)}
+
+                      <div>
+                        <div class="member-name">
+                          ${escapeHtml(member.name)}
+                        </div>
+
+                        <div class="member-title">
+                          ${member.points} bodů
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="achievement-member-summary-right">
+                      <div class="achievement-count">
+                        ${unlockedCount}/${items.length} odemčeno
+                      </div>
+
+                      <span
+                        class="collapse-chevron"
+                        aria-hidden="true"
+                      >
+                        ▾
+                      </span>
+                    </div>
+                  </summary>
+
+                  <div class="achievement-member-content">
+                    <div class="achievement-grid">
+                    ${items
+                      .map(item => {
+                        const current =
+                          Math.max(
+                            Number(item.current_value) || 0,
+                            0
+                          );
+
+                        const target =
+                          Math.max(
+                            Number(item.target_value) || 0,
+                            0
+                          );
+
+                        const percent =
+                          achievementPercent(item);
+
+                        return `
+                          <article
+                            class="achievement-item ${
+                              item.unlocked
+                                ? "unlocked"
+                                : "locked"
+                            }"
+                          >
+                            <div class="achievement-icon">
+                              ${escapeHtml(item.icon)}
+                            </div>
+
+                            <div>
+                              <div class="achievement-name">
+                                ${
+                                  item.unlocked
+                                    ? "✓ "
+                                    : "🔒 "
+                                }
+                                ${escapeHtml(
+                                  item.achievement_name
+                                )}
+                              </div>
+
+                              <div class="achievement-description">
+                                ${escapeHtml(item.description)}
+                              </div>
+
+                              <div class="achievement-status">
+                                <span>
+                                  ${
+                                    item.unlocked
+                                      ? "Odemčeno"
+                                      : `${current}/${target}`
+                                  }
+                                </span>
+
+                                <span>${percent} %</span>
+                              </div>
+
+                              <div class="achievement-progress-bar">
+                                <div
+                                  class="achievement-progress-fill"
+                                  style="width:${percent}%"
+                                ></div>
+                              </div>
+                            </div>
+                          </article>
+                        `;
+                      })
+                      .join("")}
+                    </div>
+                  </div>
+                </details>
+              `;
+            })
+            .join("")}
+        </div>
+      `;
+    }
+
+    function statisticAvatarHtml(value) {
+      const avatar = value || "🙂";
+
+      if (/^https?:\/\//i.test(avatar)) {
+        return `
+          <span class="statistic-avatar">
+            <img
+              src="${escapeHtml(avatar)}"
+              alt="Avatar"
+              onerror="this.parentElement.innerHTML='🙂'"
+            >
+          </span>
+        `;
+      }
+
+      return `
+        <span class="statistic-avatar">
+          ${escapeHtml(avatar)}
+        </span>
+      `;
+    }
+
+    function renderStatistics() {
+      const container =
+        document.getElementById("statistics");
+
+      if (!container) {
+        return;
+      }
+
+      if (statisticsLoadError) {
+        container.innerHTML = `
+          <div class="empty">
+            Statistiky se nepodařilo načíst.<br>
+            ${escapeHtml(statisticsLoadError)}
+          </div>
+        `;
+        return;
+      }
+
+      if (!memberStatistics.length) {
+        container.innerHTML = `
+          <div class="empty">
+            Zatím nejsou dostupná žádná data.
+          </div>
+        `;
+        return;
+      }
+
+      const pointsChampion = [...memberStatistics]
+        .sort(
+          (first, second) =>
+            Number(second.total_points || 0) -
+            Number(first.total_points || 0)
+        )[0];
+
+      const activityChampion = [...memberStatistics]
+        .sort(
+          (first, second) =>
+            Number(second.total_events || 0) -
+            Number(first.total_events || 0)
+        )[0];
+
+      const medalRanking = members
+        .map(member => ({
+          member,
+          count: achievementsForMember(member.id)
+            .filter(item => item.unlocked).length
+        }))
+        .sort((first, second) => second.count - first.count);
+
+      const medalChampion = medalRanking[0];
+
+      container.innerHTML = `
+        <div class="record-strip">
+          <div class="record-card">
+            <div class="record-label">🏆 Bodový rekord</div>
+            <div class="record-value">
+              ${escapeHtml(pointsChampion?.member_name || "—")}
+            </div>
+            <div class="record-detail">
+              ${Number(pointsChampion?.total_points || 0)} bodů
+            </div>
+          </div>
+
+          <div class="record-card">
+            <div class="record-label">⚡ Nejvíc událostí</div>
+            <div class="record-value">
+              ${escapeHtml(activityChampion?.member_name || "—")}
+            </div>
+            <div class="record-detail">
+              ${Number(activityChampion?.total_events || 0)} událostí
+            </div>
+          </div>
+
+          <div class="record-card">
+            <div class="record-label">🏅 Nejvíc medailí</div>
+            <div class="record-value">
+              ${escapeHtml(medalChampion?.member?.name || "—")}
+            </div>
+            <div class="record-detail">
+              ${Number(medalChampion?.count || 0)} achievementů
+            </div>
+          </div>
+        </div>
+
+        <div class="statistics-grid">
+          ${statisticDefinitions
+            .map(definition => {
+              const ranking = [...memberStatistics]
+                .sort((first, second) => {
+                  const valueDifference =
+                    Number(second[definition.key] || 0) -
+                    Number(first[definition.key] || 0);
+
+                  if (valueDifference !== 0) {
+                    return valueDifference;
+                  }
+
+                  return String(first.member_name)
+                    .localeCompare(
+                      String(second.member_name),
+                      "cs"
+                    );
+                })
+                .slice(0, 3);
+
+              const highestValue =
+                Number(ranking[0]?.[definition.key] || 0);
+
+              return `
+                <article class="statistic-card">
+                  <div class="statistic-heading">
+                    <div class="statistic-icon">
+                      ${definition.icon}
+                    </div>
+
+                    <div>
+                      <div class="statistic-title">
+                        ${escapeHtml(definition.title)}
+                      </div>
+
+                      <div class="statistic-unit">
+                        ${escapeHtml(definition.unit)}
+                      </div>
+                    </div>
+                  </div>
+
+                  ${
+                    highestValue <= 0
+                      ? `
+                        <div class="statistic-empty">
+                          Zatím bez záznamu.
+                        </div>
+                      `
+                      : `
+                        <div class="statistic-ranking">
+                          ${ranking
+                            .filter(
+                              row =>
+                                Number(
+                                  row[definition.key] || 0
+                                ) > 0
+                            )
+                            .map((row, index) => `
+                              <div class="statistic-row">
+                                <div class="statistic-medal">
+                                  ${["🥇", "🥈", "🥉"][index]}
+                                </div>
+
+                                ${statisticAvatarHtml(row.avatar)}
+
+                                <div
+                                  class="statistic-name"
+                                  title="${escapeHtml(
+                                    row.member_name
+                                  )}"
+                                >
+                                  ${escapeHtml(row.member_name)}
+                                </div>
+
+                                <div class="statistic-value">
+                                  ${Number(
+                                    row[definition.key] || 0
+                                  )}×
+                                </div>
+                              </div>
+                            `)
+                            .join("")}
+                        </div>
+                      `
+                  }
+                </article>
+              `;
+            })
+            .join("")}
+        </div>
+      `;
+    }
+
+    function renderLeaderboard() {
+      const leaderboard =
+        document.getElementById("leaderboard");
+
+      if (!members.length) {
+        leaderboard.innerHTML =
+          `<div class="empty">Zatím žádní členové.</div>`;
+        return;
+      }
+
+      leaderboard.innerHTML = members
+        .map((member, index) => {
+          const medal =
+            ["🥇", "🥈", "🥉"][index] || "";
+
+          return `
+            <div class="leader">
+              ${avatarHtml(member.avatar)}
+
+              <div>
+                <div class="member-name">
+                  ${medal} ${escapeHtml(member.name)}
+                </div>
+
+                <div class="member-title">
+                  ${memberTitle(member)}
+                </div>
+
+                <div class="level-bar">
+                  <div
+                    class="level-progress"
+                    style="width:${levelProgress(member.points)}%"
+                  ></div>
+                </div>
+
+                ${achievementBadgesHtml(member.id)}
+              </div>
+
+              <div class="member-points">
+                ${member.points} b
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+    }
+
+    function renderMemberSelect() {
+      const select =
+        document.getElementById("memberSelect");
+
+      const previousValue = select.value;
+
+      select.innerHTML = members
+        .map(member => `
+          <option value="${member.id}">
+            ${escapeHtml(member.name)}
+          </option>
+        `)
+        .join("");
+
+      if (
+        previousValue &&
+        members.some(
+          member =>
+            String(member.id) === previousValue
+        )
+      ) {
+        select.value = previousValue;
+      }
+    }
+
+    function renderActions() {
+      const actions =
+        document.getElementById("actions");
+
+      actions.innerHTML = categories
+        .map(category => `
+          <button
+            class="action"
+            type="button"
+            onclick="addEvent('${category.key}')"
+          >
+            <span class="action-points">
+              +${category.points}
+            </span>
+
+            <strong>
+              ${category.icon}
+              ${escapeHtml(category.label)}
+            </strong>
+
+            <small>Přidat událost</small>
+          </button>
+        `)
+        .join("");
+    }
+
+    function renderHistory() {
+      const history =
+        document.getElementById("history");
+
+      if (!events.length) {
+        history.innerHTML = `
+          <div class="empty">
+            Zatím nic. Podezřele klidná skupina.
+          </div>
+        `;
+        return;
+      }
+
+      history.innerHTML = events
+        .map(event => {
+          const memberName =
+            event.members?.name || "Neznámý člen";
+
+          const date = new Date(
+            event.created_at
+          ).toLocaleString("cs-CZ");
+
+          return `
+            <div class="event">
+              <div>
+                <strong>
+                  ${escapeHtml(memberName)}
+                </strong>
+
+                –
+                ${escapeHtml(event.event_icon)}
+                ${escapeHtml(event.label)}
+
+                ${
+                  event.note
+                    ? `
+                      <div class="event-note">
+                        ${escapeHtml(event.note)}
+                      </div>
+                    `
+                    : ""
+                }
+
+                <div class="event-time">
+                  ${date}
+                </div>
+              </div>
+
+              <div class="event-side">
+                <div class="event-points">
+                  +${event.points}
+                </div>
+
+                <button
+                  class="delete-event-button"
+                  type="button"
+                  title="Smazat tuto událost"
+                  aria-label="Smazat tuto událost"
+                  onclick="deleteEvent(${event.id})"
+                >
+                  🗑️
+                </button>
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+    }
+
+    function requirePin(action) {
+      if (savedPin) {
+        action();
+        return;
+      }
+
+      pendingAction = action;
+
+      document.getElementById("pinInput").value = "";
+      pinDialog.showModal();
+
+      window.setTimeout(() => {
+        document.getElementById("pinInput").focus();
+      }, 100);
+    }
+
+    function closePinDialog() {
+      pendingAction = null;
+      pinDialog.close();
+    }
+
+    async function confirmPin() {
+      const pin =
+        document.getElementById("pinInput").value;
+
+      const response = await database.rpc(
+        "check_pin",
+        {
+          p_pin: pin
+        }
+      );
+
+      if (response.error || !response.data) {
+        showToast("Špatný PIN.");
+        return;
+      }
+
+      savedPin = pin;
+
+      sessionStorage.setItem(
+        "achievements_pin",
+        pin
+      );
+
+      pinDialog.close();
+      showToast("Aplikace je odemčená.");
+
+      const action = pendingAction;
+      pendingAction = null;
+
+      if (action) {
+        action();
+      }
+    }
+
+    function addEvent(categoryKey) {
+      requirePin(async () => {
+        const category = categories.find(
+          item => item.key === categoryKey
+        );
+
+        const memberId = Number(
+          document.getElementById(
+            "memberSelect"
+          ).value
+        );
+
+        const memberBefore = members.find(
+          member => Number(member.id) === memberId
+        );
+
+        const oldPoints = Number(memberBefore?.points || 0);
+        const oldLevel = levelForPoints(oldPoints);
+        const oldUnlockedKeys = new Set(
+          achievementsForMember(memberId)
+            .filter(item => item.unlocked)
+            .map(item => item.achievement_key)
+        );
+
+        const note =
+          document.getElementById(
+            "noteInput"
+          ).value.trim();
+
+        const response = await database.rpc(
+          "add_event",
+          {
+            p_pin: savedPin,
+            p_member_id: memberId,
+            p_category: category.key,
+            p_label: category.label,
+            p_event_icon: category.icon,
+            p_points: category.points,
+            p_note: note
+          }
+        );
+
+        if (response.error) {
+          showToast(errorMessage(response.error));
+          return;
+        }
+
+        document.getElementById(
+          "noteInput"
+        ).value = "";
+
+        await loadData();
+
+        const updatedMember = members.find(
+          member => Number(member.id) === memberId
+        );
+
+        const memberName =
+          updatedMember?.name || memberBefore?.name || "Někdo";
+
+        const newLevel = levelForPoints(
+          updatedMember?.points || oldPoints + category.points
+        );
+
+        const newlyUnlocked = achievementsForMember(memberId)
+          .filter(item => item.unlocked)
+          .filter(
+            item => !oldUnlockedKeys.has(item.achievement_key)
+          );
+
+        if (newLevel.min > oldLevel.min) {
+          celebrate(
+            `${memberName} postupuje na level ${newLevel.icon} ${newLevel.title}!`
+          );
+          return;
+        }
+
+        if (newlyUnlocked.length) {
+          const achievement = newlyUnlocked[0];
+          celebrate(
+            `${memberName} odemyká ${achievement.icon} ${achievement.achievement_name}!`
+          );
+          return;
+        }
+
+        showToast(commentFor(memberName, category.key), 3100);
+      });
+    }
+
+    function openProfiles() {
+      const list =
+        document.getElementById("profilesList");
+
+      list.innerHTML = members
+        .map(member => {
+          const statistics = memberStatistics.find(
+            item => String(item.member_id) === String(member.id)
+          );
+
+          const unlockedCount = achievementsForMember(member.id)
+            .filter(item => item.unlocked).length;
+
+          const level = levelForPoints(member.points);
+
+          const categoryRanking = statisticDefinitions
+            .filter(item => item.key !== "total_events")
+            .map(definition => ({
+              ...definition,
+              value: Number(statistics?.[definition.key] || 0)
+            }))
+            .sort((first, second) => second.value - first.value);
+
+          const topCategory = categoryRanking[0];
+
+          const memberKey = String(member.id);
+          const shouldOpen = openProfileMembers.has(memberKey);
+
+          return `
+            <details
+              class="profile-card"
+              ${shouldOpen ? "open" : ""}
+              ontoggle="rememberProfileOpen(${member.id}, this.open)"
+            >
+              <summary class="profile-card-header">
+                ${avatarHtml(member.avatar)}
+
+                <div>
+                  <div class="member-name">
+                    ${escapeHtml(member.name)}
+                  </div>
+
+                  <div class="member-title">
+                    ${level.icon} ${level.title}
+                  </div>
+
+                  <div class="profile-level-text">
+                    ${escapeHtml(levelCaption(member.points))}
+                  </div>
+
+                  <div class="level-bar">
+                    <div
+                      class="level-progress"
+                      style="width:${levelProgress(member.points)}%"
+                    ></div>
+                  </div>
+                </div>
+
+                <div class="profile-card-actions">
+                  <button
+                    class="ghost-button"
+                    type="button"
+                    onclick="event.preventDefault(); event.stopPropagation(); openEditProfile(${member.id})"
+                  >
+                    Upravit
+                  </button>
+
+                  <span
+                    class="collapse-chevron"
+                    aria-hidden="true"
+                  >
+                    ▾
+                  </span>
+                </div>
+              </summary>
+
+              <div class="profile-card-content">
+                <div class="profile-metrics">
+                <div class="profile-metric">
+                  <strong>${Number(member.points || 0)}</strong>
+                  <span>bodů</span>
+                </div>
+
+                <div class="profile-metric">
+                  <strong>${Number(statistics?.total_events || 0)}</strong>
+                  <span>událostí</span>
+                </div>
+
+                <div class="profile-metric">
+                  <strong>${unlockedCount}</strong>
+                  <span>medailí</span>
+                </div>
+              </div>
+
+              <div class="profile-top-category">
+                ${
+                  topCategory?.value > 0
+                    ? `Nejsilnější disciplína: ${topCategory.icon} ${escapeHtml(topCategory.title)} (${topCategory.value}×)`
+                    : "Zatím bez dominantní disciplíny."
+                }
+              </div>
+
+                ${achievementBadgesHtml(member.id)}
+              </div>
+            </details>
+          `;
+        })
+        .join("");
+
+      profilesDialog.showModal();
+    }
+
+    function openEditProfile(memberId) {
+      const member = members.find(
+        item => item.id === memberId
+      );
+
+      if (!member) {
+        return;
+      }
+
+      document.getElementById(
+        "editMemberId"
+      ).value = member.id;
+
+      document.getElementById(
+        "editName"
+      ).value = member.name;
+
+      document.getElementById(
+        "editAvatar"
+      ).value = member.avatar || "🙂";
+
+      document.getElementById(
+        "editGender"
+      ).value = member.gender || "other";
+
+      editProfileDialog.showModal();
+    }
+
+    function saveProfile() {
+      requirePin(async () => {
+        const memberId = Number(
+          document.getElementById(
+            "editMemberId"
+          ).value
+        );
+
+        const name =
+          document.getElementById(
+            "editName"
+          ).value.trim();
+
+        const avatar =
+          document.getElementById(
+            "editAvatar"
+          ).value.trim();
+
+        const gender =
+          document.getElementById(
+            "editGender"
+          ).value;
+
+        if (!name) {
+          showToast("Jméno nesmí být prázdné.");
+          return;
+        }
+
+        const response = await database.rpc(
+          "update_member",
+          {
+            p_pin: savedPin,
+            p_member_id: memberId,
+            p_name: name,
+            p_avatar: avatar,
+            p_gender: gender
+          }
+        );
+
+        if (response.error) {
+          showToast(errorMessage(response.error));
+          return;
+        }
+
+        editProfileDialog.close();
+        profilesDialog.close();
+
+        showToast("Profil uložen.");
+
+        await loadData();
+      });
+    }
+
+    function deleteEvent(eventId) {
+      requirePin(async () => {
+        const event = events.find(
+          item => Number(item.id) === Number(eventId)
+        );
+
+        if (!event) {
+          showToast("Událost už v seznamu není.");
+          return;
+        }
+
+        const memberName =
+          event.members?.name || "neznámého člena";
+
+        const confirmed = window.confirm(
+          `Opravdu smazat událost ${event.event_icon} ${event.label} u ${memberName}? Odečte se ${event.points} bodů.`
+        );
+
+        if (!confirmed) {
+          return;
+        }
+
+        const response = await database.rpc(
+          "delete_event",
+          {
+            p_pin: savedPin,
+            p_event_id: Number(eventId)
+          }
+        );
+
+        if (response.error) {
+          showToast(errorMessage(response.error));
+          return;
+        }
+
+        showToast("Událost byla smazána a body odečteny.");
+        await loadData();
+      });
+    }
+
+    function undoLastEvent() {
+      requirePin(async () => {
+        const confirmed = window.confirm(
+          "Opravdu vrátit úplně poslední bodovanou událost?"
+        );
+
+        if (!confirmed) {
+          return;
+        }
+
+        const response = await database.rpc(
+          "undo_last_event",
+          {
+            p_pin: savedPin
+          }
+        );
+
+        if (response.error) {
+          showToast(errorMessage(response.error));
+          return;
+        }
+
+        showToast("Poslední událost byla vrácena.");
+
+        await loadData();
+      });
+    }
+
+    document
+      .getElementById("pinInput")
+      .addEventListener("keydown", event => {
+        if (event.key === "Enter") {
+          confirmPin();
+        }
+      });
+
+    loadData();
+
+    window.setInterval(() => {
+      loadData();
+    }, 15000);
+  </script>
+</body>
+</html>
